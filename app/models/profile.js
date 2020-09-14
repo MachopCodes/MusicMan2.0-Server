@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching')
 const reviewSchema = require('./review')
 
 const profileSchema = new mongoose.Schema({
@@ -14,14 +15,14 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  instruments: [{
+  instrument: {
     type: String,
     required: true
-  }],
-  interests: [{
+  },
+  interest: {
     type: String,
     required: true
-  }],
+  },
   blurb: {
     type: String
   },
@@ -34,5 +35,7 @@ const profileSchema = new mongoose.Schema({
 }, {
   timestamps: true
 })
+
+profileSchema.plugin(mongoose_fuzzy_searching, { fields: ['location'] })
 
 module.exports = mongoose.model('Profile', profileSchema)

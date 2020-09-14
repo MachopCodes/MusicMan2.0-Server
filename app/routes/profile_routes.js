@@ -11,30 +11,24 @@ const router = express.Router()
 // INDEX
 // GET /profiles
 router.get('/profiles', (req, res, next) => {
-  Profile.find()
+  parse = JSON.parse(req.query.search)
+  Profile.fuzzySearch(parse.location)
+    .populate('owner')
     .then(profiles => {
-      // .populate('reviews.reviewer')
-      // .populate('owner')
-      // `profiles` will be an array of Mongoose documents
-      // we want to convert each one to a POJO, so we use `.map` to
-      // apply `.toObject` to each one
+      console.log('profiles are: ', profiles)
       return profiles.map(profile => profile.toObject())
     })
-    // respond with status 200 and JSON of the profiles
     .then(profiles => res.status(200).json({ profiles: profiles }))
-    // if an error occurs, pass it to the handler
     .catch(next)
-})
+  })
+
 
 // SHOW
 // GET /profiles/5a7db6c74d55bc51bdf39793
-router.get('/profiles/:id', requireToken, (req, res, next) => {
-  // req.params.id will be set based on the `:id` in the route
+router.get('/profiles/:id', (req, res, next) => {
   Profile.findById(req.params.id)
     .then(handle404)
-    // if `findById` is succesful, respond with 200 and "profile" JSON
     .then(profile => res.status(200).json({ profile: profile.toObject() }))
-    // if an error occurs, pass it to the handler
     .catch(next)
 })
 
@@ -75,15 +69,13 @@ router.delete('/profiles/:id', requireToken, (req, res, next) => {
   Profile.findById(req.params.id)
     .then(handle404)
     .then(profile => {
-      // throw an error if current user doesn't own `profile`
       requireOwnership(req, profile)
-      // delete the profile ONLY IF the above didn't throw
       profile.deleteOne()
     })
-    // send back 204 and no content if the deletion succeeded
     .then(() => res.sendStatus(204))
-    // if an error occurs, pass it to the handler
     .catch(next)
 })
+
+
 
 module.exports = router
