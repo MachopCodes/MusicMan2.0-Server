@@ -16,7 +16,12 @@ router.get('/profiles', (req, res, next) => {
     do_thing = Profile.find().populate('owner')
   } else {
     parse = JSON.parse(req.query.search)
-    do_thing = Profile.fuzzySearch(parse.location).populate('owner')
+    console.log('parse is: ', parse)
+    // do_thing = Profile.fuzzySearch(parse.location).populate('owner')
+    do_thing = Profile.find({
+      interest: parse.interest,
+      instrument: parse.instrument,
+      state: parse.state }).populate('owner')
   }
   do_thing.then(profiles => {
     return profiles.map(profile => profile.toObject())

@@ -7,11 +7,11 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  contact: {
+  city: {
     type: String,
     required: true
   },
-  location: {
+  state: {
     type: String,
     required: true
   },
