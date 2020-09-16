@@ -36,6 +36,6 @@ const profileSchema = new mongoose.Schema({
   timestamps: true
 })
 
-profileSchema.plugin(mongoose_fuzzy_searching, { fields: ['location'] })
+profileSchema.plugin(mongoose_fuzzy_searching, { fields: ['location', 'interest', 'instrument'] })
 
 module.exports = mongoose.model('Profile', profileSchema)

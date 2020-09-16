@@ -11,13 +11,16 @@ const router = express.Router()
 // INDEX
 // GET /profiles
 router.get('/profiles', (req, res, next) => {
-  parse = JSON.parse(req.query.search)
-  Profile.fuzzySearch(parse.location)
-    .populate('owner')
-    .then(profiles => {
-      console.log('profiles are: ', profiles)
-      return profiles.map(profile => profile.toObject())
-    })
+  let do_thing
+  if(!req.query.search) {
+    do_thing = Profile.find().populate('owner')
+  } else {
+    parse = JSON.parse(req.query.search)
+    do_thing = Profile.fuzzySearch(parse.location).populate('owner')
+  }
+  do_thing.then(profiles => {
+    return profiles.map(profile => profile.toObject())
+  })
     .then(profiles => res.status(200).json({ profiles: profiles }))
     .catch(next)
   })
