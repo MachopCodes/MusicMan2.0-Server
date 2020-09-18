@@ -29,7 +29,8 @@ const clientDevPort = 7165
 // use createIndex instead of deprecated ensureIndex
 mongoose.connect(db, {
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useUnifiedTopology: true
 })
 
 // instantiate express application object
@@ -63,7 +64,7 @@ app.use(requestLogger)
 // register route files
 app.use(userRoutes)
 app.use(profileRoutes)
-
+app.use(reviewRoutes)
 // register error handling middleware
 // note that this comes after the route middlewares, because it needs to be
 // passed any error messages from them

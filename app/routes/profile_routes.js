@@ -11,19 +11,40 @@ const router = express.Router()
 // INDEX
 // GET /profiles
 router.get('/profiles', (req, res, next) => {
-  let do_thing
-  if(!req.query.search) {
-    do_thing = Profile.find().populate('owner')
+  let search
+  if(!req.query.profile) {
+    search = Profile.find().populate('owner')
   } else {
-    parse = JSON.parse(req.query.search)
-    console.log('parse is: ', parse)
-    // do_thing = Profile.fuzzySearch(parse.location).populate('owner')
-    do_thing = Profile.find({
-      interest: parse.interest,
-      instrument: parse.instrument,
-      state: parse.state }).populate('owner')
+    p = JSON.parse(req.query.profile)
+    let q
+    if (!p.interest && p.instrument && p.state) {
+      q = { instrument: p.instrument, state: p.state }
+    } else if (p.interest && !p.instrument && p.state) {
+      q = { interest: p.interest, state: p.state }
+    } else if (p.interest && p.instrument && !p.state) {
+      q = { interest: p.interest, instrument: p.instrument }
+    } else if (!p.interest && !p.instrument && p.state) {
+      q = { state: p.state }
+    } else if (p.interest && !p.instrument && !p.state) {
+      q = { interest: p.interest }
+    } else if (!p.interest && p.instrument && !p.state) {
+      q = { instrument: p.instrument }
+    } else {
+      q = {
+        state: p.state,
+        interest: p.interest,
+        instrument: p.instrument
+      }
+    }
+    if(p.city) {
+      search = Profile.find(q).populate('owner')
+      // search = Profile.find(q).find({ city: p.city }).populate('owner')
+      // search = Profile.find(q).fuzzySearch(p.city).populate('owner')
+    } else {
+      search = Profile.find(q).populate('owner')
+    }
   }
-  do_thing.then(profiles => {
+  search.then(profiles => {
     return profiles.map(profile => profile.toObject())
   })
     .then(profiles => res.status(200).json({ profiles: profiles }))
