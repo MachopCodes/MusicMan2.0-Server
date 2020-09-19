@@ -38,7 +38,6 @@ router.get('/profiles', (req, res, next) => {
     }
     if(p.city) {
       search = Profile.find(q).populate('owner')
-      // search = Profile.find(q).find({ city: p.city }).populate('owner')
       // search = Profile.find(q).fuzzySearch(p.city).populate('owner')
     } else {
       search = Profile.find(q).populate('owner')
