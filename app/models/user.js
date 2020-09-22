@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const messageSchema = require('./messages')
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -6,6 +7,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  userName: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  messages: [messageSchema],
   hashedPassword: {
     type: String,
     required: true

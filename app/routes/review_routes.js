@@ -17,18 +17,20 @@ router.post('/reviews', (req, res, next) => {
       profile.reviews.push(reviewData)
       return profile.save()
     })
-    .then(profile => res.status(201).json(profile))
+    .then(profile => {
+      res.status(201).json(profile)
+    })
     .catch(next)
 })
 
 router.delete('/reviews/:id', (req, res, next) => {
   const id = req.params.id
-  const reviewData = req.body.review
-  const profileId = reviewData.profileId
+  const profileId = req.body.profileId
   Profile.findById(profileId)
     .then(handle404)
     .then(profile => {
-      profile.reviews.id(id).remove()
+      const review = profile.reviews.id(id)
+      review.remove()
       return profile.save()
     })
     .then(() => res.sendStatus(204))
@@ -36,8 +38,10 @@ router.delete('/reviews/:id', (req, res, next) => {
 })
 
 router.patch('/reviews/:id', (req, res, next) => {
+  console.log('req.params.id is:', req.params.id)
+  console.log('review data is:', req.body)
   const id = req.params.id
-  const reviewData = req.body.review
+  const reviewData = req.body
   const profileId = reviewData.profileId
   Profile.findById(profileId)
     .then(handle404)
