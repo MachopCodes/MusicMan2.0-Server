@@ -13,7 +13,7 @@ const router = express.Router()
 router.get('/profiles', (req, res, next) => {
   let search
   if(!req.query.profile) {
-    search = Profile.find().populate('owner')
+    search = Profile.find().sort({ _id: -1 }).populate('owner')
   } else {
     p = JSON.parse(req.query.profile)
     let q
@@ -37,10 +37,10 @@ router.get('/profiles', (req, res, next) => {
       }
     }
     if(p.city) {
-      search = Profile.find(q).populate('owner')
+      search = Profile.find(q).sort({ _id: -1 }).populate('owner')
       // search = Profile.find(q).fuzzySearch(p.city).populate('owner')
     } else {
-      search = Profile.find(q).populate('owner')
+      search = Profile.find(q).sort({ _id: -1 }).populate('owner')
     }
   }
   search.then(profiles => {

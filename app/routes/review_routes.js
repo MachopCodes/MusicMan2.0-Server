@@ -1,7 +1,9 @@
 const express = require('express')
 const passport = require('passport')
+
 const Review = require('../models/review')
 const Profile = require('../models/profile')
+
 const customErrors = require('../../lib/custom_errors')
 const handle404 = customErrors.handle404
 const requireOwnership = customErrors.requireOwnership
@@ -38,8 +40,6 @@ router.delete('/reviews/:id', (req, res, next) => {
 })
 
 router.patch('/reviews/:id', (req, res, next) => {
-  console.log('req.params.id is:', req.params.id)
-  console.log('review data is:', req.body)
   const id = req.params.id
   const reviewData = req.body
   const profileId = reviewData.profileId
@@ -52,9 +52,5 @@ router.patch('/reviews/:id', (req, res, next) => {
     .then(() => res.sendStatus(204))
     .catch(next)
 })
-
-//We are destroying a REVIEW
-// we need to find the profile ID
-// run the profile.remove() fucntion off that
 
 module.exports = router

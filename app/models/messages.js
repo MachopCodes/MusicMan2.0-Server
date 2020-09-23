@@ -1,16 +1,15 @@
 const mongoose = require('mongoose')
 
 const messageSchema = new mongoose.Schema({
-  to: {
-    type: String,
-    required: true
-  },
   title: {
     type: String,
     required: true
   },
-  body: {
-    type: Number,
+  body: [{
+    type: String
+  }],
+  to: {
+    type: String,
     required: true
   },
   from: {
