@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const http = require('http')
+const socketIo = require('socket.io')
 
 const userRoutes = require('./app/routes/user_routes')
 const profileRoutes = require('./app/routes/profile_routes')
@@ -26,6 +28,19 @@ const app = express()
 
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}` }))
 
+const server = http.createServer(app)
+const io = socketIo(server)
+
+io.on('connection', (socket) => {
+  console.log('user connected: ', socket.id)
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg)
+  })
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+})
+
 const port = process.env.PORT || serverDevPort
 
 app.use(replaceToken)
@@ -42,6 +57,5 @@ app.use(messageRoutes)
 
 app.use(errorHandler)
 
-app.listen(port, () => { console.log('listening on port ' + port) })
-
+server.listen(port, () => console.log('server listening on port ' + port))
 module.exports = app
