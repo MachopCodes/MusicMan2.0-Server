@@ -12,11 +12,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  messages: [messageSchema],
   hashedPassword: {
     type: String,
     required: true
   },
+  messages: [messageSchema],
   token: String
 }, {
   timestamps: true,
