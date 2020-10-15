@@ -10,10 +10,8 @@ const removeBlanks = require('../../lib/remove_blank_fields')
 
 router.post('/messagefrom', (req, res, next) => {
   const messageData = req.body
-  User.findById(messageData.from)
+  User.findById(messageData.receiverId)
     .then(user => {
-      console.log('from user is: ', user)
-      console.log('messageData is: ', messageData)
       user.messages.push(messageData)
       return user.save()
     })
@@ -23,10 +21,8 @@ router.post('/messagefrom', (req, res, next) => {
 
 router.post('/messageto', (req, res, next) => {
   const messageData = req.body
-  User.findById(messageData.to)
+  User.findById(messageData.senderId)
     .then(user => {
-      console.log('to user is: ', user)
-      console.log('messageData is: ', messageData)
       user.messages.push(messageData)
       return user.save()
     })

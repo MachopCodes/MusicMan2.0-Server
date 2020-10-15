@@ -13,9 +13,13 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  reviewer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  reviewerName: {
+    type: String,
+    required: true
+  },
+  reviewerId: {
+    type: String,
+    required: true
   }
 }, {
   timestamps: true

@@ -13,7 +13,7 @@ const router = express.Router()
 router.get('/profiles', (req, res, next) => {
   let search
   if(!req.query.profile) {
-    search = Profile.find().sort({ _id: -1 }).populate('owner')
+    search = Profile.find().sort({ _id: -1 }).populate('owner', 'name messages')
   } else {
     p = JSON.parse(req.query.profile)
     let q
@@ -36,20 +36,16 @@ router.get('/profiles', (req, res, next) => {
         instrument: p.instrument
       }
     }
-    if(p.city) {
-      search = Profile.find(q).sort({ _id: -1 }).populate('owner')
-      // search = Profile.find(q).fuzzySearch(p.city).populate('owner')
-    } else {
-      search = Profile.find(q).sort({ _id: -1 }).populate('owner')
-    }
+    // if(p.city) {
+    //   search = Profile.find(q).sort({ _id: -1 }).populate('owner')
+    // }
   }
   search.then(profiles => {
     return profiles.map(profile => profile.toObject())
   })
-    .then(profiles => res.status(200).json({ profiles: profiles }))
+    .then(profiles => res.status(200).json({ profiles }))
     .catch(next)
   })
-
 
 // SHOW
 // GET /profiles/5a7db6c74d55bc51bdf39793
@@ -103,7 +99,5 @@ router.delete('/profiles/:id', requireToken, (req, res, next) => {
     .then(() => res.sendStatus(204))
     .catch(next)
 })
-
-
 
 module.exports = router

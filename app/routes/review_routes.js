@@ -13,6 +13,7 @@ const router = express.Router()
 
 router.post('/reviews', (req, res, next) => {
   const reviewData = req.body
+  console.log('review data is: ', reviewData)
   const profileId = reviewData.profileId
   Profile.findById(profileId)
     .then(profile => {
