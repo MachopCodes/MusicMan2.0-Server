@@ -9,13 +9,12 @@ const requireToken = passport.authenticate('bearer', { session: false })
 const router = express.Router()
 
 // INDEX
-// GET /profiles
 router.get('/profiles', (req, res, next) => {
   let search
   if(!req.query.profile) {
     search = Profile.find().sort({ _id: -1 }).populate('owner', 'name messages')
   } else {
-    p = JSON.parse(req.query.profile)
+    const p = JSON.parse(req.query.profile)
     let q
     if (!p.interest && p.instrument && p.state) {
       q = { instrument: p.instrument, state: p.state }
@@ -30,15 +29,9 @@ router.get('/profiles', (req, res, next) => {
     } else if (!p.interest && p.instrument && !p.state) {
       q = { instrument: p.instrument }
     } else {
-      q = {
-        state: p.state,
-        interest: p.interest,
-        instrument: p.instrument
-      }
+      q = { state: p.state, interest: p.interest, instrument: p.instrument }
     }
-    // if(p.city) {
-    //   search = Profile.find(q).sort({ _id: -1 }).populate('owner')
-    // }
+    search = Profile.find(q).sort({ _id: -1 }).populate('owner', 'name messages')
   }
   search.then(profiles => {
     return profiles.map(profile => profile.toObject())
@@ -48,7 +41,6 @@ router.get('/profiles', (req, res, next) => {
   })
 
 // SHOW
-// GET /profiles/5a7db6c74d55bc51bdf39793
 router.get('/profiles/:id', (req, res, next) => {
   Profile.findById(req.params.id)
     .then(handle404)
@@ -57,7 +49,6 @@ router.get('/profiles/:id', (req, res, next) => {
 })
 
 // CREATE
-// POST
 router.post('/profiles', requireToken, (req, res, next) => {
   req.body.owner = req.user._id
   Profile.create(req.body)
@@ -66,7 +57,6 @@ router.post('/profiles', requireToken, (req, res, next) => {
 })
 
 // UPDATE
-// PATCH /profiles/5a7db6c74d55bc51bdf39793
 router.patch('/profiles/:id', requireToken, removeBlanks, (req, res, next) => {
   console.log(req.params)
   Profile.findByIdAndUpdate({
@@ -88,7 +78,6 @@ router.patch('/profiles/:id', requireToken, removeBlanks, (req, res, next) => {
 })
 
 // DESTROY
-// DELETE /profiles/5a7db6c74d55bc51bdf39793
 router.delete('/profiles/:id', requireToken, (req, res, next) => {
   Profile.findById(req.params.id)
     .then(handle404)

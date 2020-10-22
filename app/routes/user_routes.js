@@ -15,8 +15,6 @@ const router = express.Router()
 router.post('/sign-up', (req, res, next) => {
   // start a promise chain, so that any errors will pass to `handle`
   Promise.resolve(req.body.credentials)
-    // reject any requests where `credentials.password` is not present, or where
-    // the password is an empty string
     .then(credentials => {
       if (!credentials ||
           !credentials.password ||
@@ -74,7 +72,6 @@ router.patch('/change-password', requireToken, (req, res, next) => {
         throw new BadParamsError()
       }
     })
-    // hash the new password
     .then(() => bcrypt.hash(req.body.passwords.new, bcryptSaltRounds))
     .then(hash => {
       user.hashedPassword = hash
