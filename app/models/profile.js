@@ -3,10 +3,6 @@ const mongoose = require('mongoose')
 const reviewSchema = require('./review')
 
 const profileSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
   city: {
     type: String,
     required: true
