@@ -28,6 +28,8 @@ router.get('/profiles', (req, res, next) => {
       q = { interest: p.interest }
     } else if (!p.interest && p.instrument && !p.state) {
       q = { instrument: p.instrument }
+    } else if (!p.interest && !p.instrument && !p.state) {
+      q = null
     } else {
       q = { state: p.state, interest: p.interest, instrument: p.instrument }
     }
