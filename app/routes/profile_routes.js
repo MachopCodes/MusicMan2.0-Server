@@ -10,43 +10,45 @@ const router = express.Router()
 
 // INDEX
 router.get('/profiles', (req, res, next) => {
-  let search
-  if(!req.query.profile) {
-    search = Profile.find().sort({ _id: -1 }).populate('owner', 'name messages')
+  const p = JSON.parse(req.query.profile)
+  let q
+  if (!p.interest && p.instrument && p.state) {
+    q = { instrument: p.instrument, state: p.state }
+  } else if (p.interest && !p.instrument && p.state) {
+    q = { interest: p.interest, state: p.state }
+  } else if (p.interest && p.instrument && !p.state) {
+    q = { interest: p.interest, instrument: p.instrument }
+  } else if (!p.interest && !p.instrument && p.state) {
+    q = { state: p.state }
+  } else if (p.interest && !p.instrument && !p.state) {
+    q = { interest: p.interest }
+  } else if (!p.interest && p.instrument && !p.state) {
+    q = { instrument: p.instrument }
+  } else if (!p.interest && !p.instrument && !p.state) {
+    q = null
   } else {
-    const p = JSON.parse(req.query.profile)
-    let q
-    if (!p.interest && p.instrument && p.state) {
-      q = { instrument: p.instrument, state: p.state }
-    } else if (p.interest && !p.instrument && p.state) {
-      q = { interest: p.interest, state: p.state }
-    } else if (p.interest && p.instrument && !p.state) {
-      q = { interest: p.interest, instrument: p.instrument }
-    } else if (!p.interest && !p.instrument && p.state) {
-      q = { state: p.state }
-    } else if (p.interest && !p.instrument && !p.state) {
-      q = { interest: p.interest }
-    } else if (!p.interest && p.instrument && !p.state) {
-      q = { instrument: p.instrument }
-    } else if (!p.interest && !p.instrument && !p.state) {
-      q = null
-    } else {
-      q = { state: p.state, interest: p.interest, instrument: p.instrument }
-    }
-    search = Profile.find(q).sort({ _id: -1 }).populate('owner', 'name messages')
+    q = { state: p.state, interest: p.interest, instrument: p.instrument }
   }
-  search.then(profiles => {
-    return profiles.map(profile => profile.toObject())
-  })
-    .then(profiles => res.status(200).json({ profiles }))
-    .catch(next)
-  })
+search = Profile.find(q).sort({ _id: -1 }).populate('owner', 'name messages')
+search.then(profiles => {
+  return profiles.map(profile => profile.toObject())
+})
+  .then(profiles => res.status(200).json({ profiles }))
+  .catch(next)
+})
 
 // SHOW
 router.get('/profiles/:id', (req, res, next) => {
   Profile.findById(req.params.id)
     .then(handle404)
     .then(profile => res.status(200).json({ profile: profile.toObject() }))
+    .catch(next)
+})
+
+router.get('/settings/:id', (req, res, next) => {
+  Profile.find({ owner: req.params.id }).populate('owner', 'name messages')
+  .then(handle404)
+  .then(profile => res.status(200).json({ profile }))
     .catch(next)
 })
 
