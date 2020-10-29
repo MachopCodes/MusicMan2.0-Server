@@ -11,7 +11,6 @@ const removeBlanks = require('../../lib/remove_blank_fields')
 // CREATE MESSAGE ON USER ACCOUNT
 router.post('/messagefrom', (req, res, next) => {
   const messageData = req.body; User.findById(messageData.senderId).then(user => {
-    console.log('that message was sent from: ', user.name)
     user.messages.push(messageData); return user.save()
     }).then(user => res.status(201).json(user)).catch(next)
 })
@@ -19,7 +18,6 @@ router.post('/messagefrom', (req, res, next) => {
 // CREATE MESSAGE ON RECEIVER ACCOUNT
 router.post('/messageto', (req, res, next) => {
   const messageData = req.body; User.findById(messageData.receiverId).then(user => {
-    console.log('that message was sent to: ', user.name)
     user.messages.push(messageData); return user.save()
     }).then(user => res.status(201).json(user)).catch(next)
 })
