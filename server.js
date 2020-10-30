@@ -47,6 +47,7 @@ app.use(messageRoutes)
 
 app.use(errorHandler)
 
+io.set('origins', '*:*')
 io.on('connect', socket => {
   joinRoom(socket, io)
   sendMessage(socket, io)
