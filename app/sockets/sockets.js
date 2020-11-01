@@ -14,10 +14,10 @@ exports.joinRoom = (socket, io) => {
 
 exports.sendMessage = (socket, io) => {
   socket.on('sendMessage', (message, callback) => {
-    console.log('fetching oper with socket id: ', socket.id)
     const oper = getOper(socket.id)
-    console.log('sending message oper is: ', oper)
+    console.log('sending message io is: ', io)
     io.to(oper.room).emit('message', { oper: oper.name, text: message })
+    console.log('message sent')
     callback()
   })
 }
