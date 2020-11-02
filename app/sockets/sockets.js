@@ -7,6 +7,7 @@ exports.joinRoom = (socket, io) => {
     console.log('user connected', name, oper)
     if(error) return callback(error)
     socket.join(oper.room)
+    console.log('joined the room')
     io.to(oper.room).emit('roomData', {room: oper.room, opers: getOpersInRoom(oper.room) })
     callback()
   })
@@ -15,8 +16,9 @@ exports.joinRoom = (socket, io) => {
 exports.sendMessage = (socket, io) => {
   socket.on('sendMessage', (message, callback) => {
     const oper = getOper(socket.id)
+    console.log('message is: ', message)
     io.in(oper.room).emit('message', { oper: oper.name, text: message })
-    console.log('message sent')
+    console.log('message sent to :', oper.room)
     callback()
   })
 }
