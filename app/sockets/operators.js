@@ -1,12 +1,13 @@
 const opers = [];
 
 const addOper = ({ id, name, room }) => {
-  name = name.trim().toLowerCase(); room = room.trim().toLowerCase()
+  name = name.trim().toLowerCase()
+  room = room.trim().toLowerCase()
   let oper = opers.find((oper) => oper.room === room && oper.name === name);
-  if(oper === []) {
-    return { oper }
+  if(oper === []) { return { oper }
   } else {
-    oper = { id, name, room }; opers.push(oper); return { oper }
+    oper = { id, name, room }; opers.push(oper)
+    return { oper }
   }
 }
 
