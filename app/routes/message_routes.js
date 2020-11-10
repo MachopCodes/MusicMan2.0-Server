@@ -10,33 +10,24 @@ const removeBlanks = require('../../lib/remove_blank_fields')
 
 // CREATE MESSAGE ON USER ACCOUNT
 router.post('/message', (req, res, next) => {
-  const { name, room, recipient, text } = req.body
-  const pushConversation = (user, recipient, name, text) => user.messages.push({
-      recipient: person, room, message: { sender: name, text }
-    })
-
-  const push = (user, person, text) => {
-    let record = false
-    user.messages.length === 0 ? pushConversation(user, name)
+  const { name, room, recipient, message } = req.body
+  let r = false
+  User.findOne({ name: recipient }).then(user => {
+    user.messages.length === 0
+      ? user.messages.push({ room, recipient: name, message })
       : user.messages.map(m => {
-        if (name === m.recipient) {
-          record = true
-          user.messages.message.push({
-            sender: person, text
-          })
-        }
-      })
-      if (!record) pushConversation(user, name)
-      return user.save()
-    }
-
-  User.findOne({ name })
-    .then(user => push(user, recipient, text))
-    .then(() => User.findOne({ name: recipient }))
-      .then(user => push(user, name))
-    .then(user => res.status(201).json(user))
-    .catch(next)
-  })
+        if (m.recipient === name) r = true; m.message.push(message)
+      }); if (!r) user.messages.push({ room, recipient, message })
+      r = false; user.save()
+    }).then(() => User.findOne({ name })).then(user => {
+      user.messages.length === 0
+        ? user.messages.push({ room, recipient: name, message })
+        : user.messages.map(m => {
+          if (m.recipient === recipient) r = true; m.message.push(message)
+        }); if (!r) user.messages.push({ room, recipient, message })
+        return user.save()
+      }).then(user => res.status(201).json(user)).catch(next)
+    })
 
 // DELETE MESSAGE FROM USER ACCOUNT
 router.delete('/messages/:id', (req, res, next) => {
