@@ -40,19 +40,16 @@ router.post('/message', (req, res, next) => {
 })
 
 // DELETE MESSAGE FROM USER ACCOUNT
-router.delete('/messages/:id', (req, res, next) => {
-  const id = req.body.profileId
+router.delete('/message/:id', (req, res, next) => {
   User.findById(req.params.id).then(handle404).then(user => {
-      for (let i = 0; i < user.messages.length; i++) {
-        if (user.messages[i].sender === id || user.messages[i].receiver === id) {
-          user.messages.splice(user.messages[i], 1); i--
-          }
-        }; return user.save()
-      }).then(() => res.sendStatus(204)).catch(next)
+    const message = user.messages.id(req.body.messageId)
+    message.remove()
+    return user.save()
+  }).then(() => res.sendStatus(204)).catch(next)
 })
 
 // GETUSER
-router.get('/get-user/:id', (req, res, next) => {
+router.get('/message/:id', (req, res, next) => {
   User.findById(req.params.id).then(handle404).then(user => {
     res.status(200).json({ user: user.toObject() })
   }).catch(next)
