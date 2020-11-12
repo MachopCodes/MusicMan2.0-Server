@@ -12,22 +12,32 @@ const removeBlanks = require('../../lib/remove_blank_fields')
 router.post('/message', (req, res, next) => {
   const { name, room, recipient, message } = req.body
   let r = false
+
+  const pushMessage = (user, person) => {
+    r = true; user.messages.push({ room, recipient: person, message })
+  }
+  const pushText = (user, person) => {
+    user.messages.map(m => {
+      if (m.recipient === person) {
+          r = true
+          m.message.push(message)
+        }
+      }); if (!r) pushMessage(user, person)
+    }
+
   User.findOne({ name: recipient }).then(user => {
     user.messages.length === 0
-      ? user.messages.push({ room, recipient: name, message })
-      : user.messages.map(m => {
-        if (m.recipient === name) r = true; m.message.push(message)
-      }); if (!r) user.messages.push({ room, recipient, message })
-      r = false; user.save()
-    }).then(() => User.findOne({ name })).then(user => {
-      user.messages.length === 0
-        ? user.messages.push({ room, recipient: name, message })
-        : user.messages.map(m => {
-          if (m.recipient === recipient) r = true; m.message.push(message)
-        }); if (!r) user.messages.push({ room, recipient, message })
-        return user.save()
-      }).then(user => res.status(201).json(user)).catch(next)
-    })
+      ? pushMessage(user, name)
+      : pushText(user, name)
+    r = false
+    user.save()
+  }).then(() => User.findOne({ name })).then(user => {
+    user.messages.length === 0
+      ? pushMessage(user, recipient)
+      : pushText(user, recipient)
+    return user.save()
+  }).then(user => res.status(201).json(user)).catch(next)
+})
 
 // DELETE MESSAGE FROM USER ACCOUNT
 router.delete('/messages/:id', (req, res, next) => {
