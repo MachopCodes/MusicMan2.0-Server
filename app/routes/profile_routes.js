@@ -10,26 +10,18 @@ const router = express.Router()
 
 // INDEX
 router.get('/profiles', (req, res, next) => {
-  const p = JSON.parse(req.query.profile)
-  let q; if (!p.interest && p.instrument && p.state) {
-    q = { instrument: p.instrument, state: p.state }
-  } else if (p.interest && !p.instrument && p.state) {
-    q = { interest: p.interest, state: p.state }
-  } else if (p.interest && p.instrument && !p.state) {
-    q = { interest: p.interest, instrument: p.instrument }
-  } else if (!p.interest && !p.instrument && p.state) {
-    q = { state: p.state }
-  } else if (p.interest && !p.instrument && !p.state) {
-    q = { interest: p.interest }
-  } else if (!p.interest && p.instrument && !p.state) {
-    q = { instrument: p.instrument }
-  } else if (!p.interest && !p.instrument && !p.state) {
-    q = null
-  } else {
-    q = { state: p.state, interest: p.interest, instrument: p.instrument }
-  }
-search = Profile.find(q).sort({ _id: -1 }).populate('owner', 'name messages')
-search.then(profiles => {
+  const { interest, instrument, state } = JSON.parse(req.query.profile)
+  let q
+  if (interest, instrument, state) q = { state, interest, instrument }
+  if (!state && interest, instrument) q = { interest, instrument }
+  if (!interest && instrument, state) q = { instrument, state }
+  if (!instrument && interest, state) q = { interest, state }
+  if (instrument && !state && !interest) q = { instrument }
+  if (interest && !instrument && !state) q = { interest }
+  if (state && !interest && !instrument) q = { state }
+  if (!interest && !instrument && !state) q = null
+  search = Profile.find(q).sort({ _id: -1 }).populate('owner', 'name messages')
+  search.then(profiles => {
   return profiles.map(profile => profile.toObject())
 }).then(profiles => res.status(200).json({ profiles })).catch(next)
 })
